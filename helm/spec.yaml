@@ -87,6 +87,7 @@ services:
                   service.beta.kubernetes.io/aws-load-balancer-target-node-labels: omnistrate.com/managed-by=omnistrate
                   service.beta.kubernetes.io/aws-load-balancer-type: external
                   service.beta.kubernetes.io/load-balancer-source-ranges: 0.0.0.0/0
+                  service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
               affinity:
                 nodeAffinity:
                   requiredDuringSchedulingIgnoredDuringExecution:
@@ -143,6 +144,7 @@ services:
                   service.beta.kubernetes.io/aws-load-balancer-target-node-labels: omnistrate.com/managed-by=omnistrate
                   service.beta.kubernetes.io/aws-load-balancer-type: external
                   service.beta.kubernetes.io/load-balancer-source-ranges: 0.0.0.0/0
+                  service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
               affinity:
                 nodeAffinity:
                   requiredDuringSchedulingIgnoredDuringExecution:

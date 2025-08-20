@@ -2,6 +2,10 @@
 
 spec:
   enablePDB: true
+  bootstrap:
+    initdb:
+      secret:
+        name: basic-auth
   enableSuperuserAccess: false
   failoverDelay: 0
   instances: 1
@@ -20,4 +24,46 @@ spec:
     resizeInUseVolumes: true
     size: 20Gi
     storageClass: gp3
-  
+  managed:
+    services:
+      additional:
+        - selectorType: ro
+          serviceTemplate:
+            metadata:
+              name: "{{ $sys.id }}-cluster-ro"
+              annotations:
+                  external-dns.alpha.kubernetes.io/hostname: reader-{{ $sys.network.externalClusterEndpoint }}
+                  external-dns.alpha.kubernetes.io/ttl: "60"
+                  service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: omnistrate.com/resource={{ $sys.deployment.resourceID }},omnistrate.com/instance={{ $sys.id }},omnistrate.com/managed-by=omnistrate
+                  service.beta.kubernetes.io/aws-load-balancer-manage-backend-security-group-rules: "false"
+                  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+                  service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+                  service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ $sys.deploymentCell.publicSubnetIDs[*].id }}"
+                  service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: preserve_client_ip.enabled=true
+                  service.beta.kubernetes.io/aws-load-balancer-target-node-labels: omnistrate.com/managed-by=omnistrate
+                  service.beta.kubernetes.io/aws-load-balancer-type: external
+                  service.beta.kubernetes.io/load-balancer-source-ranges: 0.0.0.0/0
+                  service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+            spec:
+               type: LoadBalancer
+          updateStrategy: patch
+        - selectorType: rw
+          serviceTemplate:
+            metadata:
+              name: "{{ $sys.id }}-cluster-rw"
+              annotations:
+                  external-dns.alpha.kubernetes.io/hostname: {{ $sys.network.externalClusterEndpoint }}
+                  external-dns.alpha.kubernetes.io/ttl: "60"
+                  service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: omnistrate.com/resource={{ $sys.deployment.resourceID }},omnistrate.com/instance={{ $sys.id }},omnistrate.com/managed-by=omnistrate
+                  service.beta.kubernetes.io/aws-load-balancer-manage-backend-security-group-rules: "false"
+                  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+                  service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+                  service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ $sys.deploymentCell.publicSubnetIDs[*].id }}"
+                  service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: preserve_client_ip.enabled=true
+                  service.beta.kubernetes.io/aws-load-balancer-target-node-labels: omnistrate.com/managed-by=omnistrate
+                  service.beta.kubernetes.io/aws-load-balancer-type: external
+                  service.beta.kubernetes.io/load-balancer-source-ranges: 0.0.0.0/0
+                  service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+            spec:
+               type: LoadBalancer
+          updateStrategy: patch

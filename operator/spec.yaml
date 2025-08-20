@@ -59,6 +59,19 @@ services:
         required: false
         export: true
         defaultValue: "20Gi"
+    endpointConfiguration:
+      writer:
+        host: "$sys.network.externalClusterEndpoint"
+        ports:
+          - 5432
+        primary: true
+        networkingType: PUBLIC
+      reader:
+        host: "reader-{{ $sys.network.externalClusterEndpoint }}"
+        ports:
+          - 5432
+        primary: false
+        networkingType: PUBLIC
     operatorCRDConfiguration:
       template: |
         apiVersion: postgresql.cnpg.io/v1
@@ -67,6 +80,10 @@ services:
           name: {{ $sys.id }}
         spec:
           enablePDB: true
+          bootstrap:
+            initdb:
+              secret:
+                name: basic-auth
           affinity:
             nodeAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
@@ -93,10 +110,63 @@ services:
             resizeInUseVolumes: true
             size: {{ $var.storageSize }}
             storageClass: gp3
-
+          managed:
+            services:
+              additional:
+                - selectorType: ro
+                  serviceTemplate:
+                    metadata:
+                      name: "{{ $sys.id }}-cluster-ro"
+                      annotations:
+                          external-dns.alpha.kubernetes.io/hostname: reader-{{ $sys.network.externalClusterEndpoint }}
+                          external-dns.alpha.kubernetes.io/ttl: "60"
+                          service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: omnistrate.com/resource={{ $sys.deployment.resourceID }},omnistrate.com/instance={{ $sys.id }},omnistrate.com/managed-by=omnistrate
+                          service.beta.kubernetes.io/aws-load-balancer-manage-backend-security-group-rules: "false"
+                          service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+                          service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+                          service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ $sys.deploymentCell.publicSubnetIDs[*].id }}"
+                          service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: preserve_client_ip.enabled=true
+                          service.beta.kubernetes.io/aws-load-balancer-target-node-labels: omnistrate.com/managed-by=omnistrate
+                          service.beta.kubernetes.io/aws-load-balancer-type: external
+                          service.beta.kubernetes.io/load-balancer-source-ranges: 0.0.0.0/0
+                          service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+                    spec:
+                      type: LoadBalancer
+                  updateStrategy: patch
+                - selectorType: rw
+                  serviceTemplate:
+                    metadata:
+                      name: "{{ $sys.id }}-cluster-rw"
+                      annotations:
+                          external-dns.alpha.kubernetes.io/hostname: {{ $sys.network.externalClusterEndpoint }}
+                          external-dns.alpha.kubernetes.io/ttl: "60"
+                          service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: omnistrate.com/resource={{ $sys.deployment.resourceID }},omnistrate.com/instance={{ $sys.id }},omnistrate.com/managed-by=omnistrate
+                          service.beta.kubernetes.io/aws-load-balancer-manage-backend-security-group-rules: "false"
+                          service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+                          service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+                          service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ $sys.deploymentCell.publicSubnetIDs[*].id }}"
+                          service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: preserve_client_ip.enabled=true
+                          service.beta.kubernetes.io/aws-load-balancer-target-node-labels: omnistrate.com/managed-by=omnistrate
+                          service.beta.kubernetes.io/aws-load-balancer-type: external
+                          service.beta.kubernetes.io/load-balancer-source-ranges: 0.0.0.0/0
+                          service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+                    spec:
+                      type: LoadBalancer
+                  updateStrategy: patch
+      supplementalFiles:
+        - |
+          # Basic auth using parameters
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: basic-auth
+            namespace: {{ $sys.id }}
+          type: kubernetes.io/basic-auth
+          data:
+            username: {{ $func.base64encode($var.postgresqlUsername) }}
+            password: {{ $func.base64encode($var.postgresqlPassword) }}
       readinessConditions:
         "$var._crd.status.phase": "Cluster in healthy state"
-        "$var._crd.status.readyInstances": "{{ $var.numberOfInstances }}"
         '$var._crd.status.conditions[?(@.type=="Ready")].status': "True"
 
       outputParameters:
