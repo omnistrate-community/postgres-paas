@@ -88,16 +88,6 @@ services:
                       operator: In
                       values:
                       - {{ $sys.deployment.resourceID }}
-            podAntiAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-              - labelSelector:
-                  matchExpressions:
-                  - key: omnistrate.com/schedule-mode
-                    operator: In
-                    values:
-                    - exclusive
-                namespaceSelector: {}
-                topologyKey: kubernetes.io/hostname
           instances: {{ $var.numberOfInstances }}
           storage:
             resizeInUseVolumes: true

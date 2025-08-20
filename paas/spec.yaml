@@ -21,6 +21,7 @@ services:
           gitConfiguration:
             reference: refs/heads/main
             repositoryUrl: https://github.com/omnistrate-community/postgres-paas
+          terraformExecutionIdentity: arn:aws:iam::533267314642:role/omnistrate-custom-terraform-execution-role
           requiredOutputs:
             - key: cluster_endpoint
               exported: true
