@@ -1,0 +1,240 @@
+# yaml-language-server: $schema=https://api.omnistrate.cloud/2022-09-01-00/schema/service-spec-schema.json
+
+name: PostgreSQL Server # Service Plan Name
+deployment:
+  hostedDeployment:
+    AwsAccountId: "533267314642"
+    AWSBootstrapRoleAccountArn: "arn:aws:iam::533267314642:role/omnistrate-bootstrap-role"
+tenancyType: OMNISTRATE_CUSTOM_TENANCY
+features:
+  INTERNAL:
+    logs: # Omnistrate native
+  CUSTOMER:
+    logs: # Omnistrate native
+
+services:
+  - name: PostgreSQL Database
+    compute:
+      instanceTypes:
+        - apiParam: instanceType
+          cloudProvider: aws
+    network:
+      ports:
+        - 5432
+    endpointConfiguration:
+      writer:
+        host: "$sys.network.externalClusterEndpoint"
+        ports:
+          - 5432
+        primary: true
+        networkingType: PUBLIC
+      reader:
+        host: "reader-{{ $sys.network.externalClusterEndpoint }}"
+        ports:
+          - 5432
+        primary: false
+        networkingType: PUBLIC
+    helmChartConfiguration:
+      chartName: postgresql
+      chartVersion: 16.7.26
+      chartRepoName: bitnami
+      chartRepoURL: https://charts.bitnami.com/bitnami
+      layeredChartValues:
+        - name: base
+          values:
+            auth:
+              database: postgres
+              username: $var.username
+              password: $var.password
+              replicationPassword: $func.uuidv4()
+            architecture: replication
+            backup:
+              enabled: true
+              cronjob:
+                storage:
+                  enabled: true
+                  size: $var.storageSize
+                resources:
+                  limits:
+                    cpu: 500m
+                    memory: 512Mi
+                nodeSelector:
+                  "omnistrate.com/managed-by": omnistrate
+                  "omnistrate.com/resource": $sys.deployment.resourceID
+            synchronousCommit: 
+            numSynchronousReplicas: $var.readReplicaCount
+            primary:
+              podLabels:
+                omnistrate.com/schedule-mode: exclusive
+              resources:
+                requests:
+                  cpu: 250m
+                  memory: 256Mi
+              persistence:
+                enabled: true
+                size: $var.storageSize
+              service:
+                type: LoadBalancer
+                annotations:
+                  external-dns.alpha.kubernetes.io/hostname: $sys.network.externalClusterEndpoint
+                  external-dns.alpha.kubernetes.io/ttl: "60"
+                  service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: omnistrate.com/resource={{ $sys.deployment.resourceID }},omnistrate.com/instance={{ $sys.id }},omnistrate.com/managed-by=omnistrate
+                  service.beta.kubernetes.io/aws-load-balancer-manage-backend-security-group-rules: "false"
+                  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+                  service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+                  service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ $sys.deploymentCell.publicSubnetIDs[*].id }}"
+                  service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: preserve_client_ip.enabled=true
+                  service.beta.kubernetes.io/aws-load-balancer-target-node-labels: omnistrate.com/managed-by=omnistrate
+                  service.beta.kubernetes.io/aws-load-balancer-type: external
+                  service.beta.kubernetes.io/load-balancer-source-ranges: 0.0.0.0/0
+              affinity:
+                nodeAffinity:
+                  requiredDuringSchedulingIgnoredDuringExecution:
+                    nodeSelectorTerms:
+                      - matchExpressions:
+                        - key: omnistrate.com/managed-by
+                          operator: In
+                          values:
+                          - omnistrate
+                        - key: topology.kubernetes.io/region
+                          operator: In
+                          values:
+                          - $sys.deploymentCell.region
+                        - key: node.kubernetes.io/instance-type
+                          operator: In
+                          values:
+                          - $sys.compute.node.instanceType
+                        - key: omnistrate.com/resource
+                          operator: In
+                          values:
+                          - $sys.deployment.resourceID
+                podAntiAffinity:
+                  requiredDuringSchedulingIgnoredDuringExecution:
+                  - labelSelector:
+                      matchExpressions:
+                      - key: omnistrate.com/schedule-mode
+                        operator: In
+                        values:
+                        - exclusive
+                    namespaceSelector: {}
+                    topologyKey: kubernetes.io/hostname
+            readReplicas:
+              replicaCount: $var.readReplicaCount
+              podLabels:
+                omnistrate.com/schedule-mode: exclusive
+              resources:
+                requests:
+                  cpu: 250m
+                  memory: 256Mi
+              persistence:
+                enabled: true
+                size: $var.storageSize
+              service:
+                type: LoadBalancer
+                annotations:
+                  external-dns.alpha.kubernetes.io/hostname: reader-{{ $sys.network.externalClusterEndpoint }}
+                  external-dns.alpha.kubernetes.io/ttl: "60"
+                  service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: omnistrate.com/resource={{ $sys.deployment.resourceID }},omnistrate.com/instance={{ $sys.id }},omnistrate.com/managed-by=omnistrate
+                  service.beta.kubernetes.io/aws-load-balancer-manage-backend-security-group-rules: "false"
+                  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+                  service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+                  service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ $sys.deploymentCell.publicSubnetIDs[*].id }}"
+                  service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: preserve_client_ip.enabled=true
+                  service.beta.kubernetes.io/aws-load-balancer-target-node-labels: omnistrate.com/managed-by=omnistrate
+                  service.beta.kubernetes.io/aws-load-balancer-type: external
+                  service.beta.kubernetes.io/load-balancer-source-ranges: 0.0.0.0/0
+              affinity:
+                nodeAffinity:
+                  requiredDuringSchedulingIgnoredDuringExecution:
+                    nodeSelectorTerms:
+                      - matchExpressions:
+                        - key: omnistrate.com/managed-by
+                          operator: In
+                          values:
+                          - omnistrate
+                        - key: topology.kubernetes.io/region
+                          operator: In
+                          values:
+                          - $sys.deploymentCell.region
+                        - key: node.kubernetes.io/instance-type
+                          operator: In
+                          values:
+                          - $sys.compute.node.instanceType
+                        - key: omnistrate.com/resource
+                          operator: In
+                          values:
+                          - $sys.deployment.resourceID
+                podAntiAffinity:
+                  requiredDuringSchedulingIgnoredDuringExecution:
+                  - labelSelector:
+                      matchExpressions:
+                      - key: omnistrate.com/schedule-mode
+                        operator: In
+                        values:
+                        - exclusive
+                    namespaceSelector: {}
+                    topologyKey: kubernetes.io/hostname
+        - name: aws
+          values:
+            backup:
+              cronjob:
+                storage:
+                  storageClass: gp3-immediate
+          scope:
+            "{{ $sys.deploymentCell.cloudProviderName }}": "aws"
+        - name: gcp
+          values:
+            backup:
+              cronjob:
+                storage:
+                  storageClass: pd-standard-immediate
+          scope:
+            "{{ $sys.deploymentCell.cloudProviderName }}": "gcp"
+        - name: azure
+          values:
+            backup:
+              cronjob:
+                storage:
+                  storageClass: managed-premium-immediate
+          scope:
+            "{{ $sys.deploymentCell.cloudProviderName }}": "azure"
+    apiParameters:
+      - key: username
+        description: PostgreSQL Username
+        name: PostgreSQL Username
+        type: String
+        modifiable: false
+        required: false
+        export: true
+        defaultValue: "postgres"
+      - key: password
+        description: PostgreSQL Password
+        name: PostgreSQL Password
+        type: Password
+        modifiable: false
+        required: true
+        export: true
+      - key: instanceType
+        description: Compute Instance Type for PostgreSQL
+        name: Instance Type
+        type: String
+        modifiable: true
+        required: false
+        export: true
+        defaultValue: "t3.medium"
+      - key: storageSize
+        description: Storage size for PostgreSQL data
+        name: Storage Size
+        type: String
+        modifiable: true
+        required: false
+        export: true
+        defaultValue: "20Gi"
+      - key: readReplicaCount
+        description: Number of read replicas for PostgreSQL
+        name: Read Replica Count
+        type: Float64
+        modifiable: true
+        required: false
+        export: true
+        defaultValue: "0"

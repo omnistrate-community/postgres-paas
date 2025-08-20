@@ -1,0 +1,76 @@
+# yaml-language-server: $schema=https://api.omnistrate.cloud/2022-09-01-00/schema/service-spec-schema.json
+
+name: PostgreSQL Server # Service Plan Name
+deployment:
+  hostedDeployment:
+    AwsAccountId: "533267314642"
+    AWSBootstrapRoleAccountArn: "arn:aws:iam::533267314642:role/omnistrate-bootstrap-role"
+tenancyType: OMNISTRATE_CUSTOM_TENANCY
+features:
+  INTERNAL:
+    logs: # Omnistrate native
+  CUSTOMER:
+    logs: # Omnistrate native
+
+services:
+  - name: PostgreSQL Aurora Cluster
+    terraformConfigurations:
+      configurationPerCloudProvider:
+        aws:
+          terraformPath: /terraform
+          gitConfiguration:
+            reference: refs/heads/main
+            repositoryUrl: https://github.com/omnistrate-community/postgres-paas
+          requiredOutputs:
+            - key: cluster_endpoint
+              exported: true
+            - key: cluster_reader_endpoint
+              exported: true
+            - key: cluster_port
+              exported: true
+            - key: cluster_id
+              exported: true
+            - key: cluster_arn
+              exported: true
+            - key: master_username
+              exported: true
+            - key: master_password
+              exported: true
+            - key: database_name
+              exported: true
+            - key: writer_instance_endpoint
+              exported: true
+            - key: reader_instance_endpoint
+              exported: true
+    apiParameters:
+      - key: username
+        description: PostgreSQL Master Username
+        name: Master Username
+        type: String
+        modifiable: false
+        required: false
+        export: true
+        defaultValue: "postgres"
+      - key: password
+        description: PostgreSQL Master Password
+        name: Master Password
+        type: Password
+        modifiable: false
+        required: true
+        export: true
+      - key: instanceType
+        description: Aurora Instance Class
+        name: Instance Class
+        type: String
+        modifiable: true
+        required: false
+        export: true
+        defaultValue: "db.r6g.large"
+      - key: readReplicaCount
+        description: Number of Aurora read replicas
+        name: Read Replica Count
+        type: Float64
+        modifiable: true
+        required: false
+        export: true
+        defaultValue: "1"
