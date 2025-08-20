@@ -1,4 +1,4 @@
-output "cluster_endpoint" {
+output "cluster_global_endpoint" {
   description = "Aurora cluster endpoint"
   value       = aws_rds_cluster.aurora_postgres.endpoint
 }

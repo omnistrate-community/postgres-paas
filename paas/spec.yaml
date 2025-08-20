@@ -23,7 +23,7 @@ services:
             repositoryUrl: https://github.com/omnistrate-community/postgres-paas
           terraformExecutionIdentity: arn:aws:iam::533267314642:role/omnistrate-custom-terraform-execution-role
           requiredOutputs:
-            - key: cluster_endpoint
+            - key: cluster_global_endpoint
               exported: true
             - key: cluster_reader_endpoint
               exported: true
