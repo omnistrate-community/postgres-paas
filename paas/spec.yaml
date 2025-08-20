@@ -3,8 +3,8 @@
 name: PostgreSQL Server # Service Plan Name
 deployment:
   hostedDeployment:
-    AwsAccountId: "533267314642"
-    AWSBootstrapRoleAccountArn: "arn:aws:iam::533267314642:role/omnistrate-bootstrap-role"
+    AwsAccountId: "541226919566"
+    AWSBootstrapRoleAccountArn: "arn:aws:iam::541226919566:role/omnistrate-bootstrap-role"
 tenancyType: OMNISTRATE_CUSTOM_TENANCY
 features:
   INTERNAL:
@@ -21,7 +21,7 @@ services:
           gitConfiguration:
             reference: refs/heads/main
             repositoryUrl: https://github.com/omnistrate-community/postgres-paas
-          terraformExecutionIdentity: arn:aws:iam::533267314642:role/omnistrate-custom-terraform-execution-role
+          terraformExecutionIdentity: arn:aws:iam::541226919566:role/omnistrate-custom-terraform-execution-role
           requiredOutputs:
             - key: cluster_global_endpoint
               exported: true
