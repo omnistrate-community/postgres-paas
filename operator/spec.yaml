@@ -40,7 +40,15 @@ services:
         modifiable: false
         required: false
         export: true
-        defaultValue: "postgres"
+        defaultValue: "app"
+      - key: postgresqlDatabase
+        description: Default Database Name
+        name: Default Database Name
+        type: String
+        modifiable: false
+        required: false
+        export: true
+        defaultValue: "app"
       - key: numberOfInstances
         description: Total Number of Instances
         name: Total Number of Instances
@@ -82,6 +90,8 @@ services:
           enablePDB: true
           bootstrap:
             initdb:
+              owner: {{ $var.postgresqlUsername }}
+              database: {{ $var.postgresqlDatabase }}
               secret:
                 name: basic-auth
           affinity:
