@@ -17,7 +17,7 @@ services:
     terraformConfigurations:
       configurationPerCloudProvider:
         aws:
-          terraformPath: /terraform
+          terraformPath: /paas/terraform
           gitConfiguration:
             reference: refs/heads/main
             repositoryUrl: https://github.com/omnistrate-community/postgres-paas
@@ -40,7 +40,7 @@ services:
               exported: true
             - key: writer_instance_endpoint
               exported: true
-            - key: reader_instance_endpoint
+            - key: reader_instance_endpoints
               exported: true
     apiParameters:
       - key: username

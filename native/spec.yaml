@@ -55,7 +55,7 @@ services:
         description: PGAdmin Password
         name: Password
         type: Password
-        export: false
+        export: true
         required: true
         modifiable: false
       - key: dbUser

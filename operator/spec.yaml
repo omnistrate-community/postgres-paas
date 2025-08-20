@@ -1,1 +1,121 @@
 # yaml-language-server: $schema=https://api.omnistrate.cloud/2022-09-01-00/schema/service-spec-schema.json
+name: PostgreSQL Server # Service Plan Name
+deployment:
+  hostedDeployment:
+    AwsAccountId: "533267314642"
+    AWSBootstrapRoleAccountArn: "arn:aws:iam::533267314642:role/omnistrate-bootstrap-role"
+tenancyType: OMNISTRATE_CUSTOM_TENANCY
+features:
+  INTERNAL:
+    logs: # Omnistrate native
+  CUSTOMER:
+    logs: # Omnistrate native
+
+services:
+  - name: CNPG
+    compute:
+      instanceTypes:
+        - apiParam: instanceType
+          cloudProvider: aws
+    apiParameters:
+      - key: instanceType
+        description: Instance Type
+        name: Instance Type
+        type: String
+        modifiable: true
+        required: false
+        export: true
+        defaultValue: "t3.medium"
+      - key: postgresqlPassword
+        description: Default DB Password
+        name: Password
+        type: Password
+        modifiable: false
+        required: true
+        export: true
+      - key: postgresqlUsername
+        description: Username
+        name: Default DB Username
+        type: String
+        modifiable: false
+        required: false
+        export: true
+        defaultValue: "postgres"
+      - key: numberOfInstances
+        description: Total Number of Instances
+        name: Total Number of Instances
+        type: Float64
+        modifiable: true
+        required: false
+        export: true
+        defaultValue: "1"
+        limits:
+          min: 1
+      - key: storageSize
+        description: Storage size for PostgreSQL data
+        name: Storage Size
+        type: String
+        modifiable: true
+        required: false
+        export: true
+        defaultValue: "20Gi"
+    operatorCRDConfiguration:
+      template: |
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        metadata:
+          name: {{ $sys.id }}
+        spec:
+          enablePDB: true
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                    - key: omnistrate.com/managed-by
+                      operator: In
+                      values:
+                      - omnistrate
+                    - key: topology.kubernetes.io/region
+                      operator: In
+                      values:
+                      - {{ $sys.deploymentCell.region }}
+                    - key: node.kubernetes.io/instance-type
+                      operator: In
+                      values:
+                      - {{ $sys.compute.node.instanceType }}
+                    - key: omnistrate.com/resource
+                      operator: In
+                      values:
+                      - {{ $sys.deployment.resourceID }}
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: omnistrate.com/schedule-mode
+                    operator: In
+                    values:
+                    - exclusive
+                namespaceSelector: {}
+                topologyKey: kubernetes.io/hostname
+          instances: {{ $var.numberOfInstances }}
+          storage:
+            resizeInUseVolumes: true
+            size: {{ $var.storageSize }}
+            storageClass: gp3
+
+      readinessConditions:
+        "$var._crd.status.phase": "Cluster in healthy state"
+        "$var._crd.status.readyInstances": "{{ $var.numberOfInstances }}"
+        '$var._crd.status.conditions[?(@.type=="Ready")].status': "True"
+
+      outputParameters:
+        "Postgres Container Image": "$var._crd.status.image"
+        "Status": "$var._crd.status.phase"
+        "Topology": "$var._crd.status.topology"
+
+      helmChartDependencies:
+        - chartName: cloudnative-pg
+          chartVersion: 0.26.0
+          chartRepoName: cnpg
+          chartRepoURL: https://cloudnative-pg.github.io/charts

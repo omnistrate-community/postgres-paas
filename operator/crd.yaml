@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/postgresql.cnpg.io/cluster_v1.json
+
+spec:
+  enablePDB: true
+  enableSuperuserAccess: false
+  failoverDelay: 0
+  instances: 1
+  logLevel: info
+  maxSyncReplicas: 0
+  minSyncReplicas: 0
+  postgresGID: 26
+  postgresUID: 26
+  primaryUpdateMethod: restart
+  primaryUpdateStrategy: unsupervised
+  smartShutdownTimeout: 180
+  startDelay: 3600
+  stopDelay: 1800
+  switchoverDelay: 3600
+  storage:
+    resizeInUseVolumes: true
+    size: 20Gi
+    storageClass: gp3
+  
