@@ -5,7 +5,7 @@ deployment:
   hostedDeployment:
     AwsAccountId: "533267314642"
     AWSBootstrapRoleAccountArn: "arn:aws:iam::533267314642:role/omnistrate-bootstrap-role"
-tenancyType: OMNISTRATE_CUSTOM_TENANCY
+tenancyType: CUSTOM_TENANCY
 features:
   INTERNAL:
     logs: # Omnistrate native
