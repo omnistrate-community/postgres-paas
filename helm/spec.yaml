@@ -11,9 +11,9 @@ features:
     logs: # Omnistrate native
   CUSTOMER:
     logs: # Omnistrate native
-
+    metrics:
 services:
-  - name: PostgreSQL Database
+  - name: postgres
     compute:
       instanceTypes:
         - apiParam: instanceType
@@ -61,7 +61,24 @@ services:
                 nodeSelector:
                   "omnistrate.com/managed-by": omnistrate
                   "omnistrate.com/resource": $sys.deployment.resourceID
-            synchronousCommit: 
+            image:
+              tag: latest
+            metrics:
+              enabled: true
+              extraEnvVars:
+              - name: DATA_SOURCE_NAME
+                value: "postgresql://postgres:$(POSTGRES_PASSWORD)@127.0.0.1:5432/postgres?sslmode=disable"
+              - name: POSTGRES_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    # Replace 'postgres-postgresql' with your actual secret name if different
+                    name: postgres-postgresql
+                    key: postgres-password
+              image:
+                tag: latest
+              serviceMonitor:
+                enabled: true
+            synchronousCommit:
             numSynchronousReplicas: $var.readReplicaCount
             primary:
               podLabels:
