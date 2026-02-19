@@ -2,7 +2,7 @@
 name: PostgreSQL Server # Service Plan Name
 deployment:
   byoaDeployment:
-    AwsAccountId: '541226919566' # AWS account owned by Fujitsu
+    AwsAccountId: '541226919566' # Control Plane AWS Account
     AWSBootstrapRoleAccountArn: 'arn:aws:iam::541226919566:role/omnistrate-bootstrap-role'
 tenancyType: CUSTOM_TENANCY
 features:
