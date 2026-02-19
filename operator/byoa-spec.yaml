@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=https://api.omnistrate.cloud/2022-09-01-00/schema/service-spec-schema.json
 name: PostgreSQL Server # Service Plan Name
 deployment:
-  hostedDeployment:
-    AwsAccountId: '<AWS_ACCOUNT_ID>'
-    AWSBootstrapRoleAccountArn: 'arn:aws:iam::<AWS_ACCOUNT_ID>:role/omnistrate-bootstrap-role'
+  byoaDeployment:
+    AwsAccountId: '541226919566' # AWS account owned by Fujitsu
+    AWSBootstrapRoleAccountArn: 'arn:aws:iam::541226919566:role/omnistrate-bootstrap-role'
 tenancyType: CUSTOM_TENANCY
 features:
   INTERNAL:
