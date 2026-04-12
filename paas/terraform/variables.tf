@@ -1,7 +1,7 @@
 variable "postgres_version" {
   description = "PostgreSQL version for Aurora cluster"
   type        = string
-  default     = "15.4"
+  default     = "15.10"
 }
 
 variable "master_username" {
