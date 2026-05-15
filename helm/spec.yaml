@@ -65,6 +65,13 @@ services:
               tag: latest
             metrics:
               enabled: true
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+                limits:
+                  cpu: 200m
+                  memory: 256Mi
               extraEnvVars:
               - name: DATA_SOURCE_NAME
                 value: "postgresql://postgres:$(POSTGRES_PASSWORD)@127.0.0.1:5432/postgres?sslmode=disable"
