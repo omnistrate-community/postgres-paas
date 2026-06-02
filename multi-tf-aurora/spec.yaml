@@ -1,0 +1,205 @@
+# yaml-language-server: $schema=https://api.omnistrate.cloud/2022-09-01-00/schema/service-spec-schema.json
+
+name: PostgreSQL Multi Terraform Aurora
+deployment:
+  byoaDeployment:
+    AwsAccountId: "541226919599"
+    AwsBootstrapRoleAccountArn: "arn:aws:iam::541226919599:role/omnistrate-bootstrap-role"
+
+features:
+  CUSTOM_TERRAFORM_POLICY:
+    policies:
+      aws: |
+        {
+          "Statement": [
+            {
+              "Action": [
+                "rds:*",
+                "ec2:Describe*"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ]
+        }
+
+services:
+  - name: aurora-cluster-01
+    type: terraform
+    internal: true
+    terraformConfigurations:
+      configurationPerCloudProvider:
+        aws:
+          terraformPath: /multi-tf-aurora/terraform/aurora-cluster-01
+          gitConfiguration:
+            reference: refs/heads/main
+            repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
+          requiredOutputs:
+            - key: cluster_id
+              exported: true
+            - key: cluster_endpoint
+              exported: true
+            - key: cluster_reader_endpoint
+              exported: true
+
+  - name: aurora-cluster-02
+    type: terraform
+    internal: true
+    terraformConfigurations:
+      configurationPerCloudProvider:
+        aws:
+          terraformPath: /multi-tf-aurora/terraform/aurora-cluster-02
+          gitConfiguration:
+            reference: refs/heads/main
+            repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
+          requiredOutputs:
+            - key: cluster_id
+              exported: true
+            - key: cluster_endpoint
+              exported: true
+            - key: cluster_reader_endpoint
+              exported: true
+
+  - name: aurora-cluster-03
+    type: terraform
+    internal: true
+    terraformConfigurations:
+      configurationPerCloudProvider:
+        aws:
+          terraformPath: /multi-tf-aurora/terraform/aurora-cluster-03
+          gitConfiguration:
+            reference: refs/heads/main
+            repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
+          requiredOutputs:
+            - key: cluster_id
+              exported: true
+            - key: cluster_endpoint
+              exported: true
+            - key: cluster_reader_endpoint
+              exported: true
+
+  - name: aurora-cluster-04
+    type: terraform
+    internal: true
+    terraformConfigurations:
+      configurationPerCloudProvider:
+        aws:
+          terraformPath: /multi-tf-aurora/terraform/aurora-cluster-04
+          gitConfiguration:
+            reference: refs/heads/main
+            repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
+          requiredOutputs:
+            - key: cluster_id
+              exported: true
+            - key: cluster_endpoint
+              exported: true
+            - key: cluster_reader_endpoint
+              exported: true
+
+  - name: aurora-cluster-05
+    type: terraform
+    internal: true
+    terraformConfigurations:
+      configurationPerCloudProvider:
+        aws:
+          terraformPath: /multi-tf-aurora/terraform/aurora-cluster-05
+          gitConfiguration:
+            reference: refs/heads/main
+            repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
+          requiredOutputs:
+            - key: cluster_id
+              exported: true
+            - key: cluster_endpoint
+              exported: true
+            - key: cluster_reader_endpoint
+              exported: true
+
+  - name: aurora-cluster-06
+    type: terraform
+    internal: true
+    terraformConfigurations:
+      configurationPerCloudProvider:
+        aws:
+          terraformPath: /multi-tf-aurora/terraform/aurora-cluster-06
+          gitConfiguration:
+            reference: refs/heads/main
+            repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
+          requiredOutputs:
+            - key: cluster_id
+              exported: true
+            - key: cluster_endpoint
+              exported: true
+            - key: cluster_reader_endpoint
+              exported: true
+
+  - name: aurora-cluster-07
+    type: terraform
+    internal: true
+    terraformConfigurations:
+      configurationPerCloudProvider:
+        aws:
+          terraformPath: /multi-tf-aurora/terraform/aurora-cluster-07
+          gitConfiguration:
+            reference: refs/heads/main
+            repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
+          requiredOutputs:
+            - key: cluster_id
+              exported: true
+            - key: cluster_endpoint
+              exported: true
+            - key: cluster_reader_endpoint
+              exported: true
+
+  - name: aurora-cluster-08
+    type: terraform
+    internal: true
+    terraformConfigurations:
+      configurationPerCloudProvider:
+        aws:
+          terraformPath: /multi-tf-aurora/terraform/aurora-cluster-08
+          gitConfiguration:
+            reference: refs/heads/main
+            repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
+          requiredOutputs:
+            - key: cluster_id
+              exported: true
+            - key: cluster_endpoint
+              exported: true
+            - key: cluster_reader_endpoint
+              exported: true
+
+  - name: aurora-cluster-09
+    type: terraform
+    internal: true
+    terraformConfigurations:
+      configurationPerCloudProvider:
+        aws:
+          terraformPath: /multi-tf-aurora/terraform/aurora-cluster-09
+          gitConfiguration:
+            reference: refs/heads/main
+            repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
+          requiredOutputs:
+            - key: cluster_id
+              exported: true
+            - key: cluster_endpoint
+              exported: true
+            - key: cluster_reader_endpoint
+              exported: true
+
+  - name: aurora-cluster-10
+    type: terraform
+    internal: true
+    terraformConfigurations:
+      configurationPerCloudProvider:
+        aws:
+          terraformPath: /multi-tf-aurora/terraform/aurora-cluster-10
+          gitConfiguration:
+            reference: refs/heads/main
+            repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
+          requiredOutputs:
+            - key: cluster_id
+              exported: true
+            - key: cluster_endpoint
+              exported: true
+            - key: cluster_reader_endpoint
+              exported: true
