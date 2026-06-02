@@ -32,7 +32,7 @@ services:
         aws:
           terraformPath: /multi-tf-aurora/terraform/aurora-cluster-01
           gitConfiguration:
-            reference: refs/heads/main
+            reference: refs/heads/multi-tf-example
             repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
           requiredOutputs:
             - key: cluster_id
@@ -50,7 +50,7 @@ services:
         aws:
           terraformPath: /multi-tf-aurora/terraform/aurora-cluster-02
           gitConfiguration:
-            reference: refs/heads/main
+            reference: refs/heads/multi-tf-example
             repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
           requiredOutputs:
             - key: cluster_id
@@ -68,7 +68,7 @@ services:
         aws:
           terraformPath: /multi-tf-aurora/terraform/aurora-cluster-03
           gitConfiguration:
-            reference: refs/heads/main
+            reference: refs/heads/multi-tf-example
             repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
           requiredOutputs:
             - key: cluster_id
@@ -86,7 +86,7 @@ services:
         aws:
           terraformPath: /multi-tf-aurora/terraform/aurora-cluster-04
           gitConfiguration:
-            reference: refs/heads/main
+            reference: refs/heads/multi-tf-example
             repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
           requiredOutputs:
             - key: cluster_id
@@ -104,7 +104,7 @@ services:
         aws:
           terraformPath: /multi-tf-aurora/terraform/aurora-cluster-05
           gitConfiguration:
-            reference: refs/heads/main
+            reference: refs/heads/multi-tf-example
             repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
           requiredOutputs:
             - key: cluster_id
@@ -122,7 +122,7 @@ services:
         aws:
           terraformPath: /multi-tf-aurora/terraform/aurora-cluster-06
           gitConfiguration:
-            reference: refs/heads/main
+            reference: refs/heads/multi-tf-example
             repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
           requiredOutputs:
             - key: cluster_id
@@ -140,7 +140,7 @@ services:
         aws:
           terraformPath: /multi-tf-aurora/terraform/aurora-cluster-07
           gitConfiguration:
-            reference: refs/heads/main
+            reference: refs/heads/multi-tf-example
             repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
           requiredOutputs:
             - key: cluster_id
@@ -158,7 +158,7 @@ services:
         aws:
           terraformPath: /multi-tf-aurora/terraform/aurora-cluster-08
           gitConfiguration:
-            reference: refs/heads/main
+            reference: refs/heads/multi-tf-example
             repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
           requiredOutputs:
             - key: cluster_id
@@ -176,7 +176,7 @@ services:
         aws:
           terraformPath: /multi-tf-aurora/terraform/aurora-cluster-09
           gitConfiguration:
-            reference: refs/heads/main
+            reference: refs/heads/multi-tf-example
             repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
           requiredOutputs:
             - key: cluster_id
@@ -194,7 +194,7 @@ services:
         aws:
           terraformPath: /multi-tf-aurora/terraform/aurora-cluster-10
           gitConfiguration:
-            reference: refs/heads/main
+            reference: refs/heads/multi-tf-example
             repositoryUrl: https://github.com/omnistrate-community/postgres-paas.git
           requiredOutputs:
             - key: cluster_id
